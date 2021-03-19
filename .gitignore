@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.env_dev
+.env_prod
+.venv
+env/
+venv/
+ENV/
+
+# For ide
+*.idea/
+
+# For data base
+*.sqlite3
+
+# Pytest
+*.pytest_cache/
+
+# For SKD tests
+sandbox/
+sandbox.py
+
+# Mac OS
+.DS_Store
