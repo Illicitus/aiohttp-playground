@@ -1,6 +1,7 @@
 from .main import MethodHandler
 
 
+# TODO typing
 class PermissionsClass(MethodHandler):
     default_value = api_settings.DEFAULT_PERMISSION_CLASSES
 

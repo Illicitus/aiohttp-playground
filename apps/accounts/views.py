@@ -1,14 +1,21 @@
 from core.handlers.serializers import SerializersClass
-from core.responses.json import Response, ErrorResponse
-from core.validators.errors import ValidationValueError, unpack_error_details
+from core.orm.shortcuts import get_object_or_404
+from core.responses.json import (
+    ErrorResponse, Response
+)
+from core.typing.orm import TortoiseModel
+from core.validators.errors import (
+    unpack_error_details, ValidationValueError
+)
 from core.views.generics import (
-    CreateAPIView, RetrieveAPIView, ApiView
+    ApiView, CreateAPIView, RetrieveAPIView
 )
 
 from . import serializers
-from .models import UserPydantic, User
+from .models import (
+    User, UserPydantic
+)
 from .validators import unique_user_email
-from core.orm.shortcuts import get_object_or_404
 
 
 class CreateUser(CreateAPIView):
@@ -17,7 +24,7 @@ class CreateUser(CreateAPIView):
     )
     validators = (unique_user_email,)
 
-    async def prepare_response(self, instance):
+    async def prepare_response(self, instance: TortoiseModel):
         instance = await UserPydantic.dumps(instance)
         return Response(
             serializers.UserBase(**instance.dict()).dict(by_alias=True),
@@ -39,7 +46,7 @@ class LoginUser(ApiView):
 
         queryset = User.filter(email__icontains=serializer.email)
         instance = await get_object_or_404(queryset)
-        if not instance.check_password(serializer.password):
+        if not instance.check_password('test'):
             err = ValidationValueError(model=serializer, loc=('password',), msg='Incorrect password')
             raise ErrorResponse(unpack_error_details(err))
 

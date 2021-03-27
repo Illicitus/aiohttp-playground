@@ -1,13 +1,13 @@
 from importlib import import_module
 from os import path
 from typing import (
-    List, Optional
+    Any, Optional
 )
 
 from ..exceptions.main import ImproperlyConfigured
 
 
-def import_string(dotted_path):
+def import_string(dotted_path: str) -> Any:
     """
     Import a dotted module path and return the attribute/class designated by the
     last name in the path. Raise ImportError if the import failed.
@@ -32,7 +32,7 @@ def is_path_exists(selected_path: str) -> bool:
 
 
 def collect_project_models(
-        installed_apps: List[str],
+        installed_apps: tuple[str, ...],
         base_dir: str,
         apps_root_directory: str,
         include_aerich: Optional[bool] = True,

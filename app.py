@@ -1,6 +1,5 @@
 import os
 
-from core.runner.middlewares import error_middleware
 from core.runner.signallers import (
     WebAppSessionClientSignaller, WebAppTortoiseOrmSignaller
 )

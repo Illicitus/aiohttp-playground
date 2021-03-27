@@ -2,6 +2,9 @@ import hashlib
 import hmac
 import random
 import time
+from typing import (
+    Any, Optional
+)
 
 from core import config
 
@@ -20,9 +23,10 @@ except NotImplementedError:
     using_sysrandom = False
 
 
-def get_random_string(length=12,
-                      allowed_chars='abcdefghijklmnopqrstuvwxyz'
-                                    'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'):
+def get_random_string(
+        length: int = 12,
+        allowed_chars: str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+) -> str:
     """
     Return a securely generated random string.
 
@@ -44,12 +48,12 @@ def get_random_string(length=12,
     return ''.join(random.choice(allowed_chars) for _ in range(length))
 
 
-def constant_time_compare(val1, val2):
+def constant_time_compare(val1: Any, val2: Any) -> bool:
     """Return True if the two strings are equal, False otherwise."""
     return hmac.compare_digest(force_bytes(val1), force_bytes(val2))
 
 
-def pbkdf2(password, salt, iterations, dklen=0, digest=None):
+def pbkdf2(password: str, salt: str, iterations: int, dklen: Optional[int] = 0, digest: Optional[Any] = None):
     """Return the hash of password using pbkdf2."""
     if digest is None:
         digest = hashlib.sha256

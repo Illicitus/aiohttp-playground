@@ -34,15 +34,17 @@ class User(AbstractTime):
 
         instance = cls(**kwargs)
         instance._saved_in_db = False
-        db = kwargs.get("using_db") or cls._meta.db
+        db = kwargs.get('using_db') or cls._meta.db
+
         await instance.save(using_db=db, force_create=True)
+
         return instance
 
     @staticmethod
-    def hash_password(raw_password):
+    def hash_password(raw_password: str) -> str:
         return make_password(raw_password)
 
-    def check_password(self, raw_password):
+    def check_password(self, raw_password: str) -> bool:
         """
         Return a boolean of whether the raw_password was correct. Handles
         hashing formats behind the scenes.

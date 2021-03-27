@@ -1,5 +1,8 @@
 import datetime
 from decimal import Decimal
+from typing import (
+    Any, Optional
+)
 
 
 _PROTECTED_TYPES = (
@@ -7,7 +10,7 @@ _PROTECTED_TYPES = (
 )
 
 
-def is_protected_type(obj):
+def is_protected_type(obj: Any) -> bool:
     """Determine if the object instance is of a protected type.
 
     Objects of protected types are preserved as-is when passed to
@@ -16,7 +19,12 @@ def is_protected_type(obj):
     return isinstance(obj, _PROTECTED_TYPES)
 
 
-def force_bytes(s, encoding='utf-8', strings_only=False, errors='strict'):
+def force_bytes(
+        s: Any,
+        encoding: Optional[str] = 'utf-8',
+        strings_only: Optional[bool] = False,
+        errors: Optional[str] = 'strict',
+) -> bytes:
     """
     Similar to smart_bytes, except that lazy instances are resolved to
     strings, rather than kept as lazy objects.

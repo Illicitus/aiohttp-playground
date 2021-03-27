@@ -1,3 +1,5 @@
+from core.typing.serializer import PydanticModel
+
 from ..serializers.main import EmptySerializer
 from .main import MethodHandler
 
@@ -9,7 +11,7 @@ class SerializersClass(MethodHandler):
 class GetSerializerClassMixin:
     serializers_class = None
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> PydanticModel:
         results = self.serializers_class if self.serializers_class is not None else SerializersClass()
         method = self.request.method
 

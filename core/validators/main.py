@@ -1,4 +1,5 @@
 import inspect
+from typing import Callable
 
 from pydantic import ValidationError
 
@@ -9,11 +10,11 @@ from .errors import unpack_error_details
 
 class Validator:
 
-    def __init__(self, data, validators):
+    def __init__(self, data, validators: list[Callable]):
         self.data = data
         self.validators = validators
 
-    async def validate_data(self):
+    async def validate_data(self) -> None:
         for validator in self.validators:
             try:
                 if inspect.iscoroutinefunction(validator):

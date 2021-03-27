@@ -6,7 +6,7 @@ class CreateModelMixin:
     Create a model instance.
     """
 
-    async def create(self):
+    async def create(self) -> Response:
         data = await self.get_request_data()
         serializer = self.serialize_data(data)
 
@@ -33,7 +33,7 @@ class RetrieveModelMixin:
     """
     pydantic_model = None
 
-    async def retrieve(self):
+    async def retrieve(self) -> Response:
         instance = await self.get_instance()
 
         instance = await self.instance_to_pydantic_instance(instance)
@@ -45,7 +45,7 @@ class RetrieveModelMixin:
         return Response(serializer.dict(by_alias=True), status_code=201)
 
 
-class UpdateModelMixin(object):
+class UpdateModelMixin:
     """
     Update a model instance.
     """

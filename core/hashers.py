@@ -3,15 +3,18 @@ import hashlib
 import importlib
 import warnings
 from collections import OrderedDict
+from functools import lru_cache
 
 from core.utils.crypto import (
     constant_time_compare, get_random_string, pbkdf2
 )
-from functools import lru_cache
+
 
 UNUSABLE_PASSWORD_PREFIX = '!'  # This will never be a valid encoded hash
 UNUSABLE_PASSWORD_SUFFIX_LENGTH = 40  # number of random chars to add after UNUSABLE_PASSWORD_PREFIX
 
+
+# TODO typing
 
 @lru_cache()
 def get_hashers():

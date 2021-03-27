@@ -1,10 +1,11 @@
 import re
 
 from pydantic import (
-    BaseModel, Field, ValidationError, validator
+    BaseModel, Field, validator
 )
 
 from .models import User
+
 
 EMAIL_REGEX = '^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,16}$'
 PASSWORD_REGEX = '^(?=.*\d).{8,128}$'
@@ -18,24 +19,24 @@ class CreateUser(BaseModel):
     class Config:
         model = User
 
-    @classmethod
     @validator('email')
-    def validate_email(cls, value):
+    @classmethod
+    def validate_email(cls, value: str) -> str:
         if re.match(EMAIL_REGEX, value):
             return value
-        return ValidationError('Wrong email.')
+        raise ValueError('Incorrect email.')
 
-    @classmethod
     @validator('email')
-    def normalize_email(cls, value):
+    @classmethod
+    def normalize_email(cls, value: str) -> str:
         return value.lower()
 
-    @classmethod
     @validator('password')
-    def validate_password(cls, value):
+    @classmethod
+    def validate_password(cls, value: str) -> str:
         if re.match(PASSWORD_REGEX, value):
             return value
-        return ValidationError('Password is too simple.')
+        raise ValueError('Password is too simple.')
 
 
 class UserBase(BaseModel):
@@ -51,12 +52,12 @@ class LoginUser(BaseModel):
 
     @classmethod
     @validator('email')
-    def validate_email(cls, value):
+    def validate_email(cls, value: str) -> str:
         if re.match(EMAIL_REGEX, value):
             return value
-        return ValidationError('Wrong email.')
+        raise ValueError('Wrong email.')
 
     @classmethod
     @validator('email')
-    def normalize_email(cls, value):
+    def normalize_email(cls, value: str) -> str:
         return value.lower()

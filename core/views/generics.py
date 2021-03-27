@@ -1,8 +1,17 @@
+import json
+from typing import (
+    Any, Callable, Union
+)
+
 from pydantic import ValidationError
 
 from core.handlers.serializers import GetSerializerClassMixin
 from core.orm.shortcuts import get_object_or_404
-from core.responses.json import ErrorResponse
+from core.responses.json import (
+    ErrorResponse, Response
+)
+from core.typing.orm import TortoiseModel
+from core.typing.serializer import PydanticModel
 from core.validators.main import (
     unpack_error_details, Validator
 )
@@ -15,6 +24,8 @@ from .mixins import (
 from aiohttp import web
 from aiohttp_cors import CorsViewMixin
 
+from tortoise.queryset import QuerySet
+
 
 class ApiView(GetSerializerClassMixin, CorsViewMixin, web.View):
     permissions_class = None
@@ -24,7 +35,7 @@ class ApiView(GetSerializerClassMixin, CorsViewMixin, web.View):
     lookup_url_kwarg = None
     pydantic_model = None
 
-    async def get_request_data(self):
+    async def get_request_data(self) -> json:
         """
         Get data from request. Default content type is JSON, otherwise override this method.
         """
@@ -36,7 +47,7 @@ class ApiView(GetSerializerClassMixin, CorsViewMixin, web.View):
             raise ErrorResponse('Decode error! Ensure that Content-Type is application/json.')
         return request_data
 
-    def serialize_data(self, data):
+    def serialize_data(self, data: json) -> PydanticModel:
         """
         Serialize data then return pydantic object or raise ValidationError if data is wrong.
         """
@@ -47,7 +58,7 @@ class ApiView(GetSerializerClassMixin, CorsViewMixin, web.View):
         else:
             return clear_data
 
-    def get_serializer(self, *args, **kwargs):
+    def get_serializer(self, *args: Any, **kwargs: Any) -> PydanticModel:
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
@@ -57,15 +68,6 @@ class ApiView(GetSerializerClassMixin, CorsViewMixin, web.View):
 
         return serializer
 
-    def get_serializer_context(self):
-        """
-        Extra context provided to the serializer class.
-        """
-        return {
-            'request': self.request,
-            'view': self
-        }
-
     async def validate_data(self, data):
         """
         Validate data using selected validators and raise an error if data is not valid.
@@ -73,20 +75,20 @@ class ApiView(GetSerializerClassMixin, CorsViewMixin, web.View):
         validator = Validator(data, self.get_validators())
         await validator.validate_data()
 
-    def get_validators(self):
+    def get_validators(self) -> list[Union[Callable, None]]:
         """
         Return validators if they exists or empty list
         """
         return self.validators if self.validators is not None else []
 
     @staticmethod
-    def get_serializer_model(serializer):
+    def get_serializer_model(serializer: PydanticModel) -> TortoiseModel:
         model = getattr(serializer.Config, 'model', None)
         assert model is not None, 'Serializer doesn\'t include model.'
 
         return model
 
-    async def get_queryset(self):
+    async def get_queryset(self) -> QuerySet:
         """
         Get the list of items for this view.
         This must be an iterable, and may be a queryset.
@@ -100,7 +102,7 @@ class ApiView(GetSerializerClassMixin, CorsViewMixin, web.View):
             f' should override the `get_queryset()` method.'
         ) or None
 
-    async def get_instance(self):
+    async def get_instance(self) -> TortoiseModel:
         queryset = await self.get_queryset()
 
         # Perform the lookup filtering.
@@ -118,7 +120,7 @@ class ApiView(GetSerializerClassMixin, CorsViewMixin, web.View):
 
         return obj
 
-    async def instance_to_pydantic_instance(self, instance):
+    async def instance_to_pydantic_instance(self, instance: TortoiseModel) -> PydanticModel:
         if not self.pydantic_model:
             raise NotImplementedError(
                 f'{self.__class__.__name__}'
@@ -132,7 +134,7 @@ class CreateAPIView(CreateModelMixin, ApiView):
     Concrete view for creating a model instance.
     """
 
-    async def post(self):
+    async def post(self) -> Response:
         return await self.create()
 
 
@@ -141,7 +143,7 @@ class RetrieveAPIView(RetrieveModelMixin, ApiView):
     Concrete view for retrieving a model instance.
     """
 
-    async def get(self):
+    async def get(self) -> Response:
         return await self.retrieve()
 
 
@@ -150,11 +152,11 @@ class UpdateAPIView(UpdateModelMixin, ApiView):
     Concrete view for updating a model instance.
     """
 
-    def put(self):
-        return self.update()
+    async def put(self) -> Response:
+        return await self.update()
 
-    def patch(self):
-        return self.partial_update()
+    async def patch(self) -> Response:
+        return await self.partial_update()
 
 # class RetrieveUpdateAPIView(RetrieveModelMixin, UpdateModelMixin, ApiView):
 #     """
