@@ -2,12 +2,14 @@ import os
 
 from envparse import env
 
-from .utils import collect_project_models
+from core.utils.common import collect_project_models
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 env.read_envfile('.env')
+
+SECRET_KEY = 'secret'
 
 APPS_ROOT_DIRECTORY = 'apps'
 
@@ -17,6 +19,8 @@ PORT = env.int('PORT')
 
 INSTALLED_APPS = (
     'accounts',
+    'blog',
+    'core',
 )
 
 DATABASES = {

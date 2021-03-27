@@ -6,6 +6,7 @@ from aiohttp import web
 routes = [
 
     web.view('/accounts', views.CreateUser),
-    web.view(r'/accounts/{pk:\d+}', views.RetrieveUpdateDeleteUser),
+    web.view('/accounts/login', views.LoginUser),
+    web.view(r'/accounts/{id:\d+}', views.RetrieveUpdateDeleteUser),
 
 ]

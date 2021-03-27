@@ -1,14 +1,10 @@
 import inspect
 
-import orjson
 from pydantic import ValidationError
-from pydantic.json import pydantic_encoder
 
 from core.responses.json import ErrorResponse
 
-
-def validation_error(error: ValidationError) -> str:
-    return str(error.errors())
+from .errors import unpack_error_details
 
 
 class Validator:
@@ -25,4 +21,4 @@ class Validator:
                 else:
                     validator(self.data)
             except ValidationError as err:
-                raise ErrorResponse(validation_error(err))
+                raise ErrorResponse(unpack_error_details(err))

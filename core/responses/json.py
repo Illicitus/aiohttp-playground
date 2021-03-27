@@ -37,7 +37,7 @@ class Response(JsonHttpException):
             headers=headers,
             reason=reason,
             body=body,
-            text=orjson.dumps(text),
+            text=orjson.dumps(text).decode('utf-8'),
             content_type=content_type or self.content_type,
         )
 
@@ -57,16 +57,15 @@ class ErrorResponse(JsonHttpException):
     ):
         if status_code:
             self.status_code = status_code
-
         super().__init__(
             headers=headers,
             reason=reason,
             body=body,
-            text=text,
+            text=str(text),
             content_type=content_type or self.content_type,
         )
-        self.text = orjson.dumps({'error': text or self.reason}, default=pydantic_encoder)
+        self.text = orjson.dumps({'error': text or self.reason}, default=pydantic_encoder).decode('utf-8')
 
 
-class HttpNotFound(ErrorResponse):
+class NotFound(ErrorResponse):
     status_code = 404
